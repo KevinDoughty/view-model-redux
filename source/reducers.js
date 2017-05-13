@@ -5,7 +5,7 @@ import deepFreeze from "deep-freeze";
 
 // Pressing the shift key breaks undo coalescing.
 
-export function main(state={}, initialAction) { // http://redux.js.org/docs/basics/Reducers.html // https://github.com/gaearon/normalizr
+export function main(state={}, initialAction) {
 	const modifiedAction = Object.assign({ state }, initialAction);
 	const result = {
 		// required:
@@ -45,14 +45,12 @@ function preservables(now={}, action) {
 
 function before(state, action) {
 	const previousState = action.state;
-	//if (!previousState) throw new Error("before, no previous state"+JSON.stringify(action));
 	if (action.undoable) return previousState.now;
 	if (previousState && previousState.history) return previousState.history.present.before;
 	return preservables(state, action);
 }
 function after(state, action) {
 	const previousState = action.state;
-	//if (!previousState) throw new Error("after, no previous state"+JSON.stringify(action));
 	if (action.undoable) return preservables(previousState.now, action);
 	if (previousState && previousState.history) return previousState.history.present.after;
 	return preservables(state, action);
@@ -73,7 +71,7 @@ function initialHistory() {
 
 function history(state = initialHistory(), action) {
 	const { past, present, future } = state;
-	const isPreserving = action.preserve;// (preservableActions.indexOf( action.type ) > -1);
+	const isPreserving = action.preserve;
 	const previousState = action.state;
 	const previousAction = previousState.action;
 	const isCoalescing = (action.coalesce && previousAction && previousAction.type === action.type);
@@ -106,9 +104,6 @@ function history(state = initialHistory(), action) {
 }
 
 
-
-
-
 function undoRegistered(state,action) {
 	if (action.type === actions.CHANGE_UNDO_REGISTERED) return action.value;
 	return state;
@@ -125,7 +120,6 @@ function shiftKeyPressed(state = false,action) { // This breaks undo coalescing.
 // }
 
 
-
 function zero() {
 	return {
 // 		red: 127,
@@ -135,7 +129,6 @@ function zero() {
 		childIds:[]
 	};
 }
-
 
 
 function emptyTree() {
