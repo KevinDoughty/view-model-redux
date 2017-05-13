@@ -13,4 +13,7 @@ but this breaks undo coalescing which is a bug.
 
 Deleting nodes is not supported despite the button. Also missing is preservation of text field focus rings.
 
+Resizing the grid view to be narrower than a grid node is another bug of mine, 
+an issue with React-Virtualized that needs to be addressed.
+
 My focus is now on Mobx so this might not be updated much further.
