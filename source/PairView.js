@@ -12,20 +12,20 @@ var PairViewClass = (class extends Component {
 		const x = 0;//this.props.frame.origin.x;
 		const y = 0;//this.props.frame.origin.y;
 		const vertical = this.props.vertical;
-		const dividerPosition = this.props.dividerRatio * width;
-		const dividerLoc = dividerPosition || (vertical ? height:width) / 2.0 + (vertical ? y:x);
+		let dividerLoc = this.props.dividerRatio * width;
+		if (typeof this.props.dividerRatio === "undefined") dividerLoc = (vertical ? height:width) / 2.0 + (vertical ? y:x);
 		const dividerWidth = this.props.dividerWidth || 0;
 		const halfDividerWidth = dividerWidth / 2;
 		const leftWidth = dividerLoc - halfDividerWidth;
 		const rightWidth = (vertical ? height:width) - dividerLoc - halfDividerWidth;
 		const rightLoc = dividerLoc + halfDividerWidth;
 		const middleLoc = dividerLoc - halfDividerWidth;
-
+		
 		const leftFrame = (vertical ? {
-			origin: {x:0, y:0},
+			origin: {x:x, y:y},
 			size: {width:width, height:leftWidth}
 		} : {
-			origin: {x:0, y:0},
+			origin: {x:x, y:y},
 			size: {width:leftWidth, height:height}
 		});
 		const rightFrame = {
