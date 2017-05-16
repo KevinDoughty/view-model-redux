@@ -7,13 +7,12 @@ View state differs depending on direction travelled via undo or redo,
 presenting how the app appeared either before or after a change was made.
 
 A flaw is requiring a specific code structure for the reducers 
-while also requiring redundancy in the actions to have the flags `undoable`, `preserve`, or `coalesce`.
+with redundancy in the actions having the flags `undoable`, `preserve`, or `coalesce`.
 
 Pressing the shift key allows for selecting and editing multiple rows in the list view, 
 but this breaks undo coalescing which is a bug.
 
-Deleting nodes is not supported despite the button. 
-Also missing is preservation of text field focus rings and scroll position.
+Missing is preservation of text field focus rings and scroll position.
 
 Resizing the grid view to be narrower than a grid node is another bug of mine, 
 an issue with React-Virtualized that needs to be addressed.
