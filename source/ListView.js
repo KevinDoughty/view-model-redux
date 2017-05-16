@@ -26,7 +26,7 @@ class ListView extends Component {
 		style				// Style object to be applied to row (to position it)
 	}) {
 		const id = this.props.exposedIds[index];
-		const node = this.props.treeDict[id];
+		const node = this.props.normalizedTreeDict[id];
 		const text = node.text;
 		const collapsed = (this.props.collapsedIds.indexOf(id) !== -1);
 		const selected = (this.props.selectedIds.indexOf(id) !== -1);
@@ -76,7 +76,7 @@ class ListView extends Component {
 function mapStateToProps(state, ownProps) {
 	return Object.assign({}, ownProps, {
 		exposedIds: selectors.exposedIdsSelector(state),
-		treeDict: selectors.treeDictSelector(state),
+		normalizedTreeDict: selectors.normalizedTreeDictSelector(state),
 		flattenedIds: selectors.flattenedIdsSelector(state),
 		flattenedDepth: selectors.flattenedDepthSelector(state),
 		selectedIds: selectors.selectedIdsSelector(state),

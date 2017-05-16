@@ -24,7 +24,7 @@ class GridView extends Component {
 			return null;
 		}
 		const id = this.props.exposedIds[index];
-		const node = this.props.treeDict[id];
+		const node = this.props.normalizedTreeDict[id];
 		const text = node.text;
 		const selected = (this.props.selectedIds.indexOf(id) !== -1);
 		return React.createElement( GridNode, {
@@ -63,7 +63,7 @@ class GridView extends Component {
 function mapStateToProps(state, ownProps) {
 	return Object.assign({}, ownProps, {
 		exposedIds: selectors.filteredIdsSelector(state),
-		treeDict: selectors.treeDictSelector(state),
+		normalizedTreeDict: selectors.normalizedTreeDictSelector(state),
 		selectedIds: selectors.selectedIdsSelector(state),
 		collapsedIds: selectors.collapsedIdsSelector(state)
 	});

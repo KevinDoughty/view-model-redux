@@ -1,7 +1,7 @@
 import { createSelector } from "reselect";
 
 export const titleSelector = (state) => state.history.present.title;
-export const treeDictSelector = (state) => state.history.present.nodeDict;
+export const normalizedTreeDictSelector = (state) => state.history.present.normalizedTreeDict;
 export const collapsedIdsSelector = (state) => state.now.collapsedIds;
 export const filterStringSelector = (state) => state.now.filterString;
 export const selectedIdsSelector = (state) => state.now.selectedIds;
@@ -9,76 +9,76 @@ export const selectedIdsSelector = (state) => state.now.selectedIds;
 // The following selectors inefficiently calculate each value separately, walking the same set over and over, and would benefit from restructuring the state tree to calculate once, one selector which returns one sub-state-tree containing each individual value. The code is easier this way, however.
 
 export const flattenedIdsSelector = createSelector(
-	[treeDictSelector],
-	(treeDict) => {
+	[normalizedTreeDictSelector],
+	(normalizedTreeDict) => {
 		const result = [];
-		populateFlattened(result, treeDict, 0);
+		populateFlattened(result, normalizedTreeDict, 0);
 		return result;
 	}
 );
 
 export const exposedIdsSelector = createSelector(
-	[flattenedIdsSelector, treeDictSelector, collapsedIdsSelector],
-	(flattenedIds, treeDict, collapsedIds) => {
+	[flattenedIdsSelector, normalizedTreeDictSelector, collapsedIdsSelector],
+	(flattenedIds, normalizedTreeDict, collapsedIds) => {
 		const result = [];
-		populateExposed(result,treeDict,0,flattenedIds,collapsedIds,0);
+		populateExposed(result,normalizedTreeDict,0,flattenedIds,collapsedIds,0);
 		return result;
 	}
 );
 
 export const filteredIdsSelector = createSelector(
-	[exposedIdsSelector, filterStringSelector, treeDictSelector],
-	(exposedIds, filterString, treeDict) => {
+	[exposedIdsSelector, filterStringSelector, normalizedTreeDictSelector],
+	(exposedIds, filterString, normalizedTreeDict) => {
 		if (!filterString || !filterString.length) return exposedIds;
-		return exposedIds.filter( id => (treeDict[id].text.indexOf(filterString) > -1) );
+		return exposedIds.filter( id => (normalizedTreeDict[id].text.indexOf(filterString) > -1) );
 	}
 );
 
 export const flattenedDepthSelector = createSelector(
-	[treeDictSelector, flattenedIdsSelector],
-	(treeDict, flattenedIds) => {
+	[normalizedTreeDictSelector, flattenedIdsSelector],
+	(normalizedTreeDict, flattenedIds) => {
 		const result = {};
 		const nodeId = 0;
 		const depth = 0;
-		populateFlattenedDepth(result, treeDict, nodeId, depth);
+		populateFlattenedDepth(result, normalizedTreeDict, nodeId, depth);
 		return result;
 	}
 );
 
-function populateFlattenedDepth(result, treeDict, nodeId, depth) {
+function populateFlattenedDepth(result, normalizedTreeDict, nodeId, depth) {
 	result[nodeId] = depth;
-	var node = treeDict[nodeId];
+	var node = normalizedTreeDict[nodeId];
 	var childIds = node.childIds || [];
 	var childrenLength = childIds.length;
 	for (var childIndex=0; childIndex<childrenLength; childIndex++) {
 		var childId = childIds[childIndex];
-		var childNode = treeDict[childId];
-		if (childNode) populateFlattenedDepth(result, treeDict, childId, depth+1);
+		var childNode = normalizedTreeDict[childId];
+		if (childNode) populateFlattenedDepth(result, normalizedTreeDict, childId, depth+1);
 	}
 }
 
-function populateFlattened(flattenedIds, dict, nodeId) {
-	const node = dict[nodeId];
+function populateFlattened(flattenedIds, normalizedTreeDict, nodeId) {
+	const node = normalizedTreeDict[nodeId];
 	const childIds = node.childIds || [];
 	const childrenLength = childIds.length;
 	for (let childIndex=0; childIndex<childrenLength; childIndex++) {
 		const childId = childIds[childIndex];
-		const childNode = dict[childId];
+		const childNode = normalizedTreeDict[childId];
 		if (childNode) {
 			flattenedIds.push(childId);
-			populateFlattened(flattenedIds, dict, childId);
+			populateFlattened(flattenedIds, normalizedTreeDict, childId);
 		}
 	}
 }
 
-function populateExposed(destination, dict, nodeId, flattenedIds, sortedCollapsedIds, collapsedIndex, ancestorCollapsed) {
-	const node = dict[nodeId];
+function populateExposed(destination, normalizedTreeDict, nodeId, flattenedIds, sortedCollapsedIds, collapsedIndex, ancestorCollapsed) {
+	const node = normalizedTreeDict[nodeId];
 	const childIds = node.childIds || [];
 	const childrenLength = childIds.length;
 	const collapsedLength = sortedCollapsedIds.length; //
 	for (let childIndex=0; childIndex<childrenLength; childIndex++) {
 		const childId = childIds[childIndex];
-		const childNode = dict[childId];
+		const childNode = normalizedTreeDict[childId];
 		if (childNode) {
 			let childCollapsed = false;
 			while (collapsedIndex < collapsedLength) {
@@ -96,7 +96,7 @@ function populateExposed(destination, dict, nodeId, flattenedIds, sortedCollapse
 				collapsedIndex++;
 			}
 			if (!ancestorCollapsed) destination.push(childId);
-			populateExposed(destination, dict, childId, flattenedIds, sortedCollapsedIds, collapsedIndex, ancestorCollapsed || childCollapsed);
+			populateExposed(destination, normalizedTreeDict, childId, flattenedIds, sortedCollapsedIds, collapsedIndex, ancestorCollapsed || childCollapsed);
 		}
 	}
 }

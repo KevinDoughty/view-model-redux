@@ -28,7 +28,7 @@ function undoables(present={}, action) {
 		before: before(present.before, action),
 		after: after(present.after, action),
 		// custom:
-		nodeDict: nodeDict(present.nodeDict, action),
+		normalizedTreeDict: normalizedTreeDict(present.normalizedTreeDict, action),
 		title: title(present.title, action)
 	};
 }
@@ -114,12 +114,6 @@ function shiftKeyPressed(state = false,action) { // This breaks undo coalescing.
 	return state;
 }
 
-// function isAnUndoable(action) {
-// 	var isUndoable = (action.undoable || action.type === actions.UNDO || action.type === actions.REDO);
-// 	return isUndoable;
-// }
-
-
 function zero() {
 	return {
 // 		red: 127,
@@ -130,7 +124,6 @@ function zero() {
 	};
 }
 
-
 function emptyTree() {
 	return { 0: zero() };
 }
@@ -140,33 +133,31 @@ function generateText(number) {
 }
 
 function generateTree(count) {
-	const nodeDict = emptyTree();
+	const normalizedTreeDict = emptyTree();
 	for (let i=1; i<count+1; i++) {
 		let parentId = Math.floor(Math.pow(Math.random(), 2) * i);
 		//parentId = i-1;
-		nodeDict[i+""] = {
+		normalizedTreeDict[i+""] = {
 // 			red: Math.random() * 127 + 127,
 // 			green: Math.random() * 127 + 127,
 // 			blue: Math.random() * 127 + 127,
 			text: generateText(i),
 			childIds: []
 		};
-		nodeDict[parentId].childIds.push(i);
+		normalizedTreeDict[parentId].childIds.push(i);
 	}
-	return nodeDict;
+	return normalizedTreeDict;
 }
 
-
-
-function nestedDelete(result, dict, nodeId, selectedIds, index, topLevel) { // This is an abomination, but not maintaining a parent relationship was not my idea.
-	const node = dict[nodeId];
+function nestedDelete(result, normalizedTreeDict, nodeId, selectedIds, index, topLevel) { // This is an abomination, but not maintaining a parent relationship was not my idea.
+	const node = normalizedTreeDict[nodeId];
 	const childIds = node.childIds || [];
 	const nextChildIds = [];
 	const selectedId = selectedIds[index];
 	if (selectedId === nodeId) index++; // this node is deleted
 	childIds.forEach( childId => {
 		if (selectedIds[index] !== childId) nextChildIds.push(childId);
-		index = nestedDelete(result, dict, childId, selectedIds, index, topLevel);
+		index = nestedDelete(result, normalizedTreeDict, childId, selectedIds, index, topLevel);
 	});
 	if (selectedId === nodeId) { // this node is deleted
 		nextChildIds.forEach( childId => {
@@ -179,8 +170,7 @@ function nestedDelete(result, dict, nodeId, selectedIds, index, topLevel) { // T
 	return index;
 }
 
-
-function nodeDict(state = { 0:{childIds:[]} }, action) {
+function normalizedTreeDict(state = { 0:{childIds:[]} }, action) {
 	const { nodeId, parentId } = action;
 	const source = state;
 	if (action.type === actions.DEMO_POPULATE) {
@@ -189,7 +179,7 @@ function nodeDict(state = { 0:{childIds:[]} }, action) {
 	}
 	if (typeof nodeId === "undefined") return source;
 	
-	if (action.type === actions.DELETE_SELECTED) { // nodeId is an unsorted array of selectedIds, which doesn't really need to be passed other than for the hint that this change is affecting nodeDict, which is a vestige of the Redux tree-view example and could be easily changed
+	if (action.type === actions.DELETE_SELECTED) { // nodeId is an unsorted array of selectedIds, which doesn't really need to be passed other than for the hint that this change is affecting normalizedTreeDict, which is a vestige of the Redux tree-view example and could be easily changed
 		const flattenedIds = selectors.flattenedIdsSelector(action.state);
 		const sortFunction = idSorter(flattenedIds);
 		const sortedSelectedIds = nodeId.slice(0).sort(sortFunction); // selectedIds are not sorted
@@ -205,24 +195,23 @@ function nodeDict(state = { 0:{childIds:[]} }, action) {
 		return result;
 	}
 	
-	const nodeDict = {};
+	const normalizedTreeDict = {};
 	Object.keys(source).forEach( key => {
-		nodeDict[key] = source[key];
+		normalizedTreeDict[key] = source[key];
 	});
 
 	if (Array.isArray(nodeId)) { // Some actions affect a single node, other actions affect the selection, this might benefit from a refactoring
 		nodeId.forEach( (id,index) => {
 			const subAction = Object.assign({}, action, {nodeId:id, multipleSelectionIndex:index});
-			nodeDict[id] = treeNode(source[id], subAction);
-			if (typeof parentId !== "undefined") nodeDict[parentId[index]] = parentNode(source[parentId[index]], subAction); // if nodeId is array parentId is guaranteed to also be an array
+			normalizedTreeDict[id] = treeNode(source[id], subAction);
+			if (typeof parentId !== "undefined") normalizedTreeDict[parentId[index]] = parentNode(source[parentId[index]], subAction); // if nodeId is array parentId is guaranteed to also be an array
 		});
 	} else {
-		nodeDict[nodeId] = treeNode(source[nodeId], action);
-		if (typeof parentId !== "undefined") nodeDict[parentId] = parentNode(source[parentId], action);
+		normalizedTreeDict[nodeId] = treeNode(source[nodeId], action);
+		if (typeof parentId !== "undefined") normalizedTreeDict[parentId] = parentNode(source[parentId], action);
 	}
-	return nodeDict;
+	return normalizedTreeDict;
 }
-
 
 function parentNode(parent={ childIds:[] }, action) {
 	if (action.type === actions.CREATE_NODE) {
@@ -231,7 +220,6 @@ function parentNode(parent={ childIds:[] }, action) {
 	return parent;
 	
 }
-
 
 function treeNode(node = { childIds:[] }, action) {
 	switch (action.type) {

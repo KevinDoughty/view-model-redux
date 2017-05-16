@@ -27,14 +27,14 @@ var ListHeaderClass = (class extends Component {
 	}
 
 	render() {
-		var treeDict = this.props.treeDict|| {};
+		var normalizedTreeDict = this.props.normalizedTreeDict|| {};
 		var selectedIds = this.props.selectedIds || [];
 		var text;
 		var multipleValues = false;
 		var i = selectedIds.length;
 		while (i--) {
 			var selectedId = selectedIds[i];
-			var node = treeDict[selectedId];
+			var node = normalizedTreeDict[selectedId];
 			if (node) {
 				if (typeof text === "undefined") {
 					text = node.text;
@@ -104,7 +104,7 @@ var ListHeader = React.createFactory(ListHeaderClass); // extra step required be
 function mapStateToProps(state, ownProps) {
 	return {
 		selectedIds: selectors.selectedIdsSelector(state),
-		treeDict: selectors.treeDictSelector(state)
+		normalizedTreeDict: selectors.normalizedTreeDictSelector(state)
 	};
 }
 
