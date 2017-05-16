@@ -6,6 +6,8 @@ export const collapsedIdsSelector = (state) => state.now.collapsedIds;
 export const filterStringSelector = (state) => state.now.filterString;
 export const selectedIdsSelector = (state) => state.now.selectedIds;
 
+// The following selectors inefficiently calculate each value separately, walking the same set over and over, and would benefit from restructuring the state tree to calculate once, one selector which returns one sub-state-tree containing each individual value. The code is easier this way, however.
+
 export const flattenedIdsSelector = createSelector(
 	[treeDictSelector],
 	(treeDict) => {

@@ -76,7 +76,6 @@ var PairViewClass = (class extends Component {
 			controlView:this
 		};
 
-		
 		const divider = React.createElement(Divider, dividerProps);
 		const children = (this.props.dividerWidth ? [left, divider, right] : [left, right]);
 

@@ -5,8 +5,7 @@ export const REDO = "REDO";
 export const CHANGE_TITLE = "CHANGE_TITLE";
 export const CREATE_NODE = "CREATE_NODE";
 export const ADD_CHILD = "ADD_CHILD";
-//export const DELETE_NODE = "DELETE_NODE";
-//export const REMOVE_CHILD = "REMOVE_CHILD";
+export const DELETE_SELECTED = "DELETE_SELECTED";
 export const CHANGE_FILTER_STRING = "CHANGE_FILTER_STRING";
 export const DISCLOSURE_TOGGLE = "DISCLOSURE_TOGGLE";
 export const DEMO_POPULATE = "DEMO_POPULATE";
@@ -67,12 +66,13 @@ export function createNode(parentId) {
 	};
 }
 
-// export function deleteNode(nodeId) {
-// 	return {
-// 		type: DELETE_NODE,
-// 		nodeId
-// 	};
-// }
+export function deleteSelected(nodeId) {
+	return {
+		type: DELETE_SELECTED,
+		nodeId,
+		undoable
+	};
+}
 
 export function addChild(nodeId,childId) {
 	return {
@@ -82,13 +82,6 @@ export function addChild(nodeId,childId) {
 		undoable
 	};
 }
-// export function removeChild(nodeId,childId) {
-// 	return {
-// 		type: REMOVE_CHILD,
-// 		nodeId,
-// 		childId
-// 	};
-// }
 
 export function changeFilterString(text) {
 	return {

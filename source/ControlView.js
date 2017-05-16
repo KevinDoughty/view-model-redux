@@ -10,7 +10,7 @@ var ControlViewClass = (class extends Component {
 		this.state = {
 			handleAddClick: this.handleAddClick.bind(this),
 			handleAddChildClick: this.handleAddChildClick.bind(this),
-			handleRemoveClick: this.handleRemoveClick.bind(this),
+			handleDeleteClick: this.handleDeleteClick.bind(this),
 			handleUndoClick: this.handleUndoClick.bind(this),
 			handleRedoClick: this.handleRedoClick.bind(this),
 			handleTextChange: this.handleTextChange.bind(this)
@@ -24,9 +24,9 @@ var ControlViewClass = (class extends Component {
 		createNode(selectedIds);
 		//if (selectedIds.length === 1) createNode(selectedIds[0]);
 	}
-	handleRemoveClick(e) {
-		//const { deleteNode } = this.props;
-		//deleteNode(this.props.selectedIds);
+	handleDeleteClick(e) {
+		const { deleteSelected } = this.props;
+		deleteSelected(this.props.selectedIds);
 	}
 	handleUndoClick(e) {
 		this.props.undo();
@@ -87,10 +87,10 @@ var ControlViewClass = (class extends Component {
 				}, "add child"),
 
 				React.DOM.button({
-					ref : "remove",
-					onClick : this.state.handleRemoveClick,
+					ref : "delete",
+					onClick : this.state.handleDeleteClick,
 					disabled: this.props.selectedIds.length === 0
-				}, "remove"),
+				}, "delete"),
 
 				React.DOM.input({
 					type : "text",

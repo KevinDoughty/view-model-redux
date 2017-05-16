@@ -156,11 +156,31 @@ function generateTree(count) {
 	return nodeDict;
 }
 
-//const preservableActions = [actions.SELECT_NODE, actions.EDIT_NODE, actions.DISCLOSURE_TOGGLE, actions.CHANGE_FILTER_STRING, actions.RESIZE_DIVIDER]; // surely edit node should not be preservable
-//const undoActions = [actions.UNDO, actions.REDO];
 
 
-function nodeDict(state = { 0:{childIds:[]} }, action) { // NOT full
+function nestedDelete(result, dict, nodeId, selectedIds, index, topLevel) { // This is an abomination, but not maintaining a parent relationship was not my idea.
+	const node = dict[nodeId];
+	const childIds = node.childIds || [];
+	const nextChildIds = [];
+	const selectedId = selectedIds[index];
+	if (selectedId === nodeId) index++; // this node is deleted
+	childIds.forEach( childId => {
+		if (selectedIds[index] !== childId) nextChildIds.push(childId);
+		index = nestedDelete(result, dict, childId, selectedIds, index, topLevel);
+	});
+	if (selectedId === nodeId) { // this node is deleted
+		nextChildIds.forEach( childId => {
+			topLevel.push(childId);
+		});
+	} else {
+		if (nextChildIds.length !== childIds.length) result[nodeId] = Object.assign({},node,{childIds: nextChildIds}); // one of the child nodes was deleted, childIds changed
+		else result[nodeId] = node;
+	}
+	return index;
+}
+
+
+function nodeDict(state = { 0:{childIds:[]} }, action) {
 	const { nodeId, parentId } = action;
 	const source = state;
 	if (action.type === actions.DEMO_POPULATE) {
@@ -168,14 +188,30 @@ function nodeDict(state = { 0:{childIds:[]} }, action) { // NOT full
 		return generateTree(count);
 	}
 	if (typeof nodeId === "undefined") return source;
-
+	
+	if (action.type === actions.DELETE_SELECTED) { // nodeId is an unsorted array of selectedIds, which doesn't really need to be passed other than for the hint that this change is affecting nodeDict, which is a vestige of the Redux tree-view example and could be easily changed
+		const flattenedIds = selectors.flattenedIdsSelector(action.state);
+		const sortFunction = idSorter(flattenedIds);
+		const sortedSelectedIds = nodeId.slice(0).sort(sortFunction); // selectedIds are not sorted
+		const result = {};
+		const topLevel = [];
+		nestedDelete(result, source, 0, sortedSelectedIds, 0, topLevel); // Please forgive the break from the typical reducer pattern. This could be refactored but I probably won't.
+		if (topLevel.length) { // there might not be children of deleted nodes.
+			const original = result[0];
+			const originalChildIds = original.childIds;
+			const childIds = [...originalChildIds, ...topLevel]; // I have not considered the possibility of what happens if node zero, the top level node, gets deleted
+			result[0] = Object.assign({},original,{childIds});
+		}
+		return result;
+	}
+	
 	const nodeDict = {};
-	Object.keys(source).forEach( function(key) {
+	Object.keys(source).forEach( key => {
 		nodeDict[key] = source[key];
 	});
 
-	if (Array.isArray(nodeId)) {
-		nodeId.forEach( function(id,index) {
+	if (Array.isArray(nodeId)) { // Some actions affect a single node, other actions affect the selection, this might benefit from a refactoring
+		nodeId.forEach( (id,index) => {
 			const subAction = Object.assign({}, action, {nodeId:id, multipleSelectionIndex:index});
 			nodeDict[id] = treeNode(source[id], subAction);
 			if (typeof parentId !== "undefined") nodeDict[parentId[index]] = parentNode(source[parentId[index]], subAction); // if nodeId is array parentId is guaranteed to also be an array
@@ -205,7 +241,6 @@ function treeNode(node = { childIds:[] }, action) {
 				childIds: []
 			};
 		case actions.ADD_CHILD:
-		//case actions.REMOVE_CHILD:
 			return Object.assign({}, node, {
 				childIds: childIds(node.childIds, action)
 			});
@@ -251,7 +286,7 @@ function draggingDivider(state,action) {
 	}
 	return state;
 }
-function dividerRatio(state = 0.5, action) {
+function dividerRatio(state = 0.25, action) {
 	if (action.type === actions.RESIZE_DIVIDER) return action.value;
 	return state;
 }
@@ -260,15 +295,17 @@ function childIds(childIds = [], action) {
 	switch (action.type) {
 		case actions.ADD_CHILD:
 			return [ ...childIds, action.childId ];
-// 		case actions.REMOVE_CHILD:
-// 			const index = childIds.indexOf(action.childId)
-// 			return [
-// 				...childIds.slice(0, index),
-// 				...childIds.slice(index + 1)
-// 			];
 		default:
 			return childIds;
 	}
+}
+
+function idSorter(flattenedIds) {
+	return (a,b) => {
+		var A = flattenedIds.indexOf(a);
+		var B = flattenedIds.indexOf(b);
+		return A - B;
+	};
 }
 
 function collapsedIds(state = [], action) {
@@ -279,11 +316,7 @@ function collapsedIds(state = [], action) {
 		if (index < 0) {
 			collapsedIds.push(nodeId);
 			const flattenedIds = selectors.flattenedIdsSelector(action.state);
-			const sortFunction = function(a,b) {
-				var A = flattenedIds.indexOf(a);
-				var B = flattenedIds.indexOf(b);
-				return A - B;
-			};
+			const sortFunction = idSorter(flattenedIds);
 			collapsedIds.sort(sortFunction);
 		} else {
 			collapsedIds.splice(index,1);
@@ -310,9 +343,3 @@ function nextNodeId(state = 1, action) {
 	}
 	return state;
 }
-
-// function coalesingAction(state = null, action) {
-// 	if (action.coalesce) return action.type;
-// 	if (!action.undoable) return state.coalescingAction;
-// 	return null;
-// }
