@@ -3,7 +3,7 @@ import ListHeader from "./ListHeader.js";
 import ListView from "./ListView.js";
 
 
-var ListPane = (class extends Component {
+const ListPane = (class extends Component {
 	render() {
 		const headerHeight = 38;
 		const listWidth = this.props.frame.size.width;

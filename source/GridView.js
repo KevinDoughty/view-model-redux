@@ -20,10 +20,10 @@ class GridView extends Component {
 	}
 	cellRenderer({ columnIndex, key, rowIndex, style }) {
 		const index = rowIndex * this.itemsPerRow() + columnIndex;
-		if (index >= this.props.exposedIds.length) { // you have to handle cells with no data
+		if (index >= this.props.filteredIds.length) { // you have to handle cells with no data
 			return null;
 		}
-		const id = this.props.exposedIds[index];
+		const id = this.props.filteredIds[index];
 		const node = this.props.normalizedTreeDict[id];
 		const text = node.text;
 		const selected = (this.props.selectedIds.indexOf(id) !== -1);
@@ -38,8 +38,8 @@ class GridView extends Component {
 	render() {
 		const itemDimension = this.props.itemDimension;
 		let rowCount = 0;
-		const exposedLength = this.props.exposedIds.length;
-		if (exposedLength) rowCount = Math.floor(exposedLength/this.itemsPerRow()) + 1;
+		const length = this.props.filteredIds.length;
+		if (length) rowCount = Math.floor(length/this.itemsPerRow()) + 1;
 		return (
 			React.DOM.div({
 				style:{
@@ -62,7 +62,7 @@ class GridView extends Component {
 
 function mapStateToProps(state, ownProps) {
 	return Object.assign({}, ownProps, {
-		exposedIds: selectors.filteredIdsSelector(state),
+		filteredIds: selectors.filteredIdsSelector(state),
 		normalizedTreeDict: selectors.normalizedTreeDictSelector(state),
 		selectedIds: selectors.selectedIdsSelector(state),
 		collapsedIds: selectors.collapsedIdsSelector(state)

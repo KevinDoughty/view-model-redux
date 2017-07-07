@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import Divider from "./Divider.js";
+import { connect } from "react-redux";
+import * as actions from "./actions.js";
 
-
-var PairViewClass = (class extends Component {
+var PairView = (class extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -53,8 +54,9 @@ var PairViewClass = (class extends Component {
 			height: frame.size.height + "px",
 			position:"absolute"
 		};
-
-		const cursor = (vertical ? "row-resize" : "col-resize");
+		
+		const cursor = vertical ? "row-resize" : "col-resize";
+		if (this.props.draggingDivider) splitStyle.cursor = cursor;
 
 		const left = React.cloneElement(React.Children.toArray(this.props.children)[0], {
 			frame: leftFrame,
@@ -68,7 +70,7 @@ var PairViewClass = (class extends Component {
 		
 		const dividerProps = {
 			resizeDivider:resizeDivider,
-			draggingDivider:this.props.draggingDivider,
+			setDraggingDivider:this.props.setDraggingDivider,
 			frame: middleFrame,
 			cursor: cursor,
 			key:"divider",
@@ -92,4 +94,11 @@ var PairViewClass = (class extends Component {
 		return result;
 	}
 });
-export default PairViewClass;
+//export default PairView;
+
+function mapStateToProps(state, ownProps) {
+	return { draggingDivider: state.draggingDivider };
+}
+
+const ConnectedPairView = connect(mapStateToProps, actions)(PairView)
+export default ConnectedPairView;

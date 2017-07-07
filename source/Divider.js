@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 
 
-var Divider = (class extends Component {
+const Divider = (class extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -20,7 +20,7 @@ var Divider = (class extends Component {
 		element.removeEventListener("mousedown",this.state.mouseDown);
 	}
 	mouseDown(e) {
-		this.props.draggingDivider(true);
+		this.props.setDraggingDivider(true);
 		document.addEventListener("mousemove",this.state.mouseMove,false);
 		document.addEventListener("mouseup",this.state.mouseUp,false);
 	}
@@ -32,7 +32,7 @@ var Divider = (class extends Component {
 	mouseUp(e) {
 		document.removeEventListener("mousemove",this.state.mouseMove);
 		document.removeEventListener("mouseup",this.state.mouseUp);
-		this.props.draggingDivider(false);
+		this.props.setDraggingDivider(false);
 	}
 	render() {
 

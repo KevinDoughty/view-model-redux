@@ -4,7 +4,7 @@ import * as actions from "./actions";
 import * as selectors from "./selectors.js";
 
 
-var ListHeaderClass = (class extends Component {
+const ListHeader = (class extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -99,7 +99,7 @@ var ListHeaderClass = (class extends Component {
 		);
 	}
 });
-var ListHeader = React.createFactory(ListHeaderClass); // extra step required because I"m not using JSX
+//var ListHeader = React.createFactory(ListHeaderClass); // extra step required because I"m not using JSX
 
 function mapStateToProps(state, ownProps) {
 	return {

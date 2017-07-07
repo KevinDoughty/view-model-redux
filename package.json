@@ -1,5 +1,5 @@
 {
-  "name": "view-model",
+  "name": "view-model-redux",
   "version": "0.0.1",
   "description": "redux view model",
   "private": true,

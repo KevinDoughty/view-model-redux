@@ -10,14 +10,13 @@ export const CHANGE_FILTER_STRING = "CHANGE_FILTER_STRING";
 export const DISCLOSURE_TOGGLE = "DISCLOSURE_TOGGLE";
 export const DEMO_POPULATE = "DEMO_POPULATE";
 export const RESIZE_DIVIDER = "RESIZE_DIVIDER";
-export const DRAGGING_DIVIDER = "DRAGGING_DIVIDER";
+export const SET_DRAGGING_DIVIDER = "SET_DRAGGING_DIVIDER";
 export const SELECT_NODE = "SELECT_NODE";
 export const EDIT_NODE = "EDIT_NODE";
 export const CHANGE_TEXT = "CHANGE_TEXT";
 export const SHIFT_KEY_PRESS = "SHIFT_KEY_PRESS";
 export const CHANGE_UNDO_REGISTERED = "CHANGE_UNDO_REGISTERED";
 export const CHANGE_ORIENTATION = "CHANGE_ORIENTATION";
-
 
 let nodeIdCounter = 1; // tree is initially populated with item 0
 const undoable = true;
@@ -149,9 +148,9 @@ export function changeTitle(text) {
 	};
 }
 
-export function draggingDivider(draggingDivider) {
+export function setDraggingDivider(draggingDivider) {
 	return {
-		type: DRAGGING_DIVIDER,
+		type: SET_DRAGGING_DIVIDER,
 		draggingDivider
 	};
 }

@@ -1,6 +1,6 @@
 # view-model-redux
 This shows a basic view model using Redux. 
-The code is loosely based on the [tree-view example from Redux](https://github.com/reactjs/redux/tree/master/examples/tree-view).
+The code is loosely based on the [Redux tree-view example](https://github.com/reactjs/redux/tree/master/examples/tree-view).
 
 Divider location, selection and disclosure triangle toggled state are preserved through undo and redo. 
 View state differs depending on direction travelled via undo or redo, 

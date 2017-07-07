@@ -269,7 +269,7 @@ function selectedIds(state = [], action) {
 }
 
 function draggingDivider(state,action) {
-	if (action.type === actions.DRAGGING_DIVIDER) {
+	if (action.type === actions.SET_DRAGGING_DIVIDER) {
 		return action.draggingDivider;
 	}
 	return state;

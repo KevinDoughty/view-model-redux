@@ -65,8 +65,6 @@ var App = (class extends Component {
 				React.createElement( PairView, {
 					dividerWidth:dividerWidth,
 					dividerRatio:dividerRatio,
-					resizeDivider:this.props.resizeDivider,
-					draggingDivider:this.props.draggingDivider,
 					frame:pairFrame
 				},
 

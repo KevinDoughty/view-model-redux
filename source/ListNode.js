@@ -33,6 +33,8 @@ const ListNode = (class extends Component {
 	}
 
 	handleCheckClick(e) {
+		e.stopPropagation(); // prevent selecting text with shiftKeyPressed
+		e.preventDefault(); // prevent selecting text with shiftKeyPressed
 		this.props.disclosureToggle(this.props.id);
 	}
 
@@ -169,8 +171,7 @@ const ListNode = (class extends Component {
 					id : nodeId,
 					name : nodeId,
 					checked : collapsed,
-					onChange : this.handleCheckClick,
-					onClick: this.eatMouseDown, // prevent selecting row on disclosure click
+					onClick: this.handleCheckClick,
 					style: {
 						position:"absolute",
 						zIndex: 1,
@@ -182,10 +183,7 @@ const ListNode = (class extends Component {
 				}),
 				React.createElement( DisclosureTriangle, {
 					id: nodeId,
-					toggled: collapsed,
-					onMouseDown: function(e) {
-						console.log("disclosure mouseDown");
-					}
+					toggled: collapsed
 				}),
 				rowElement
 			)
