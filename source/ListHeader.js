@@ -70,7 +70,7 @@ const ListHeader = (class extends Component {
 
 		let children = null;
 		if (textFieldWidth > 0) {
-			children = React.DOM.input({
+			const inputProps = {
 				type: "text",
 				ref: "textField",
 				style:textFieldStyle,
@@ -79,7 +79,10 @@ const ListHeader = (class extends Component {
 				onChange: this.state.handleChangeText,
 				onFocus: this.state.handleFocusText,
 				onBlur: this.state.handleBlurText
-			});
+			};
+			children = (
+				<input {...inputProps} />
+			);
 		}
 
 		var headerStyle = {
@@ -89,13 +92,14 @@ const ListHeader = (class extends Component {
 			zIndex:2
 		};
 
+		const props = {
+			className: "control",
+			style: headerStyle
+		};
 		return (
-			React.DOM.div({
-				className: "control",
-				style: headerStyle
-			},
-				children
-			)
+			<div {...props}>
+				{children}
+			</div>
 		);
 	}
 });
