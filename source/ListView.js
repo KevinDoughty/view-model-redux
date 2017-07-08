@@ -54,21 +54,20 @@ class ListView extends Component {
 	render() {
 		const itemDimension = this.props.itemDimension;
 		const rowCount = this.props.exposedIds.length;
-		
+		const style = {
+			backgroundColor:"white"
+		};
+		const listProps = {
+			width:this.props.width,
+			height:this.props.height,
+			rowCount:rowCount,
+			rowHeight:itemDimension,
+			rowRenderer:this.cellRenderer.bind(this)
+		};
 		return (
-			React.DOM.div({
-				style:{
-					backgroundColor:"white"
-				}
-			},
-				React.createElement(List, {
-					width:this.props.width,
-					height:this.props.height,
-					rowCount:rowCount,
-					rowHeight:itemDimension,
-					rowRenderer:this.cellRenderer.bind(this)
-				})
-			)
+			<div style={style}>
+				<List {...listProps} />
+			</div>
 		);
 	}
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Component } from "react";
-import DisclosureTriangle from "./DisclosureTriangle";
+import DisclosureTriangle from "./DisclosureTriangle.js";
 
 
 const ListNode = (class extends Component {
@@ -117,15 +117,19 @@ const ListNode = (class extends Component {
 			style.overflow = "visible";
 			textFieldStyle.backgroundColor = "transparent";
 		}
-		var nodeText = this.props.text;
+		const nodeText = this.props.text;
 
-		var labelProps = {
+		const labelProps = {
 			ref : "label",
 			className : labelClassName,
 			style: labelStyle
 		};
 
-		var label = React.DOM.span(labelProps, nodeText);
+		const label = (
+			<span {...labelProps}>
+				{nodeText}
+			</span>
+		)
 
 		const textFieldProps = {
 			ref : "textField",
@@ -147,7 +151,9 @@ const ListNode = (class extends Component {
 			textFieldProps.onKeyDown = this.handleKeyDownText;
 		}
 
-		const textField = React.DOM.input(textFieldProps);
+		const textField = (
+			<input {...textFieldProps} />
+		);
 
 		var rowElement = label;
 		if (selected) rowElement = textField;
@@ -161,32 +167,37 @@ const ListNode = (class extends Component {
 			itemProps.onMouseDown = this.eatMouseDown;
 		}
 
-		if (!childIds || !childIds.length) return React.DOM.div(itemProps,rowElement);
-
+		if (!childIds || !childIds.length) return (
+			<div {...itemProps}>
+				{rowElement}
+			</div>
+		);
+		const inputProps = {
+			ref : "checkbox",
+			type : "checkbox",
+			id : nodeId,
+			name : nodeId,
+			checked : collapsed,
+			onClick: this.handleCheckClick,
+			style: {
+				position:"absolute",
+				zIndex: 1,
+				cursor: "pointer",
+				opacity:0,
+				width:"16px",
+				height:"20px"
+			}
+		};
+		const disclosureProps = {
+			id: nodeId,
+			toggled: collapsed
+		};
 		return (
-			React.DOM.div(itemProps,
-				React.DOM.input({
-					ref : "checkbox",
-					type : "checkbox",
-					id : nodeId,
-					name : nodeId,
-					checked : collapsed,
-					onClick: this.handleCheckClick,
-					style: {
-						position:"absolute",
-						zIndex: 1,
-						cursor: "pointer",
-						opacity:0,
-						width:"16px",
-						height:"20px"
-					}
-				}),
-				React.createElement( DisclosureTriangle, {
-					id: nodeId,
-					toggled: collapsed
-				}),
-				rowElement
-			)
+			<div {...itemProps}>
+				<input {...inputProps} />
+				<DisclosureTriangle {...disclosureProps} />
+				{rowElement}
+			</div>
 		);
 	}
 });

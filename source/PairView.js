@@ -78,23 +78,26 @@ var PairView = (class extends Component {
 			controlView:this
 		};
 
-		const divider = React.createElement(Divider, dividerProps);
+		const divider = (
+			<Divider {...dividerProps} />
+		);
 		const children = (this.props.dividerWidth ? [left, divider, right] : [left, right]);
 
 		let className = "split horizontal";
 		if (vertical) className = "split vertical";
 
-		const result = (
-			React.DOM.div({
-				key : "splitView",
-				className : className,
-				style : splitStyle
-			}, children)
+		const divProps = {
+			key : "splitView",
+			className : className,
+			style : splitStyle
+		};
+		return (
+			<div {...divProps}>
+				{children}
+			</div>
 		);
-		return result;
 	}
 });
-//export default PairView;
 
 function mapStateToProps(state, ownProps) {
 	return { draggingDivider: state.draggingDivider };

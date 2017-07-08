@@ -59,14 +59,14 @@ const Divider = (class extends Component {
 // 			style.WebkitBackgroundClip = "padding";
 // 		}
 
+		const props = {
+			key : "divider",
+			className : "divider",
+			style : style
+		};
 		return (
-			React.DOM.div({
-				key : "divider",
-				className : "divider",
-				style : style
-			})
+			<div {...props} />
 		);
 	}
 });
 export default Divider;
-

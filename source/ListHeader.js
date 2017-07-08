@@ -99,7 +99,6 @@ const ListHeader = (class extends Component {
 		);
 	}
 });
-//var ListHeader = React.createFactory(ListHeaderClass); // extra step required because I"m not using JSX
 
 function mapStateToProps(state, ownProps) {
 	return {

@@ -20,9 +20,7 @@ const DisclosureTriangle = props => {
 		style.borderColor = "transparent transparent transparent " + color;
 	}
 	return (
-		React.DOM.div({
-			style: style
-		})
+		<div style={style} />
 	);
 }
 
